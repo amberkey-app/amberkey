@@ -1,0 +1,14 @@
+[package]
+name = "amberkey-recover"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "AmberKey offline recovery tool: reconstruct the vault key from share cards and decrypt a continuity bundle. Works with zero network access."
+
+[[bin]]
+name = "amberkey-recover"
+path = "src/main.rs"
+
+[dependencies]
+amberkey-core = { path = "../core" }
