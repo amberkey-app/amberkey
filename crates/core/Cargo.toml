@@ -13,7 +13,7 @@ crate-type = ["cdylib", "rlib"]
 age = { version = "0.11", default-features = false }
 base64 = "0.22"
 bech32 = "0.11"
-hmac = "0.12"
+hmac = "0.13"
 pbkdf2 = "0.12"
 sha2 = "0.10"
 getrandom = "0.2"
