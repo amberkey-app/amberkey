@@ -1,0 +1,203 @@
+openapi: 3.1.0
+info:
+  title: AmberKey API
+  version: 0.1.0
+  description: |
+    This documents AmberKey's OWN application interface — the contract between
+    the AmberKey web app and its server. It is published for transparency (it
+    shows exactly how little the server exposes), NOT as a public, supported, or
+    stable API: there is no anonymous surface, every endpoint requires an owner
+    session or a single-use capability link, and shapes may change without
+    notice. Do not build integrations against it; partner integrations are
+    designed separately — security@amberkey.app.
+
+    Owner endpoints use session cookies (WebAuthn-first auth, TOTP fallback).
+    Shareholder flows use signed one-time links — shareholders never need
+    accounts. The server stores only ciphertext, contact routing, liveness
+    state, and schedules — never keys, shares, or plaintext.
+servers:
+  - url: https://app.amberkey.app/api
+security:
+  - session: []
+
+components:
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: __Host-ak_session
+  schemas:
+    Error:
+      type: object
+      properties: { error: { type: string } }
+    BlobMeta:
+      type: object
+      properties:
+        hash: { type: string, description: sha256 hex of the encrypted bundle }
+        size: { type: integer }
+        created_at: { type: string, format: date-time }
+    Quorum:
+      type: object
+      properties:
+        group_threshold: { type: integer }
+        complete_groups: { type: integer }
+        quorum_met: { type: boolean }
+        groups:
+          type: array
+          items:
+            type: object
+            properties:
+              group_index: { type: integer }
+              confirmed: { type: integer }
+              member_threshold: { type: integer }
+              count: { type: integer }
+              complete: { type: boolean }
+    Ceremony:
+      type: object
+      nullable: true
+      properties:
+        id: { type: string }
+        state: { type: string, enum: [VETO, COLLECTING, RELEASED, CANCELLED] }
+        veto_ends_at: { type: string }
+        created_at: { type: string }
+        confirmed_by_you: { type: boolean }
+        quorum: { $ref: '#/components/schemas/Quorum' }
+
+paths:
+  /auth/register/start:
+    post:
+      summary: Begin passkey registration
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, display_name]
+              properties: { email: { type: string }, display_name: { type: string } }
+      responses:
+        '200': { description: WebAuthn CreationChallengeResponse; sets ak_pending cookie }
+        '409': { description: email already registered }
+  /auth/register/finish:
+    post:
+      summary: Finish passkey registration (creates account + session)
+      security: []
+      requestBody: { content: { application/json: { schema: { type: object, description: RegisterPublicKeyCredential } } } }
+      responses: { '200': { description: ok; sets ak_session } }
+  /auth/login/start:
+    post:
+      summary: Begin passkey login
+      security: []
+      requestBody: { content: { application/json: { schema: { type: object, properties: { email: { type: string } } } } } }
+      responses: { '200': { description: WebAuthn RequestChallengeResponse }, '400': { description: uniform "login failed" } }
+  /auth/login/finish:
+    post: { summary: Finish passkey login, security: [], responses: { '200': { description: ok; sets ak_session } } }
+  /auth/totp/enroll:
+    post: { summary: Enroll TOTP fallback, responses: { '200': { description: '{secret, otpauth}' } } }
+  /auth/totp/login:
+    post:
+      summary: TOTP fallback login (throttled, replay-guarded)
+      security: []
+      requestBody: { content: { application/json: { schema: { type: object, properties: { email: { type: string }, code: { type: string } } } } } }
+      responses: { '200': { description: ok }, '400': { description: uniform "login failed" } }
+  /auth/logout:
+    post: { summary: End session, responses: { '200': { description: ok } } }
+  /me:
+    get: { summary: Current owner, responses: { '200': { description: '{email, display_name, has_totp}' }, '401': { description: not signed in } } }
+
+  /blobs:
+    post:
+      summary: Upload an encrypted continuity bundle (raw age file body)
+      requestBody: { content: { application/octet-stream: {} } }
+      responses:
+        '200': { description: BlobMeta, content: { application/json: { schema: { $ref: '#/components/schemas/BlobMeta' } } } }
+        '400': { description: not an age file / empty }
+    get:
+      summary: List bundle versions (newest first, max 50 kept)
+      responses: { '200': { description: array of BlobMeta } }
+  /blobs/latest:
+    get: { summary: Download the newest bundle, responses: { '200': { description: bytes } } }
+  /blobs/{hash}:
+    get:
+      summary: Download a bundle by hash
+      parameters: [{ name: hash, in: path, required: true, schema: { type: string } }]
+      responses: { '200': { description: bytes }, '404': { description: unknown } }
+
+  /audit:
+    get: { summary: Owner-visible append-only audit log (last 200), responses: { '200': { description: array } } }
+
+  /checkin:
+    post:
+      summary: Owner check-in; resets liveness to ACTIVE, cancels ceremonies in veto. Optional duress PIN.
+      requestBody: { content: { application/json: { schema: { type: object, properties: { pin: { type: string } } } } } }
+      responses: { '200': { description: ok } }
+  /liveness:
+    get: { summary: Liveness state + next deadline + config, responses: { '200': { description: state } } }
+    put:
+      summary: Configure interval (30/60/90) and veto window (3-14 days)
+      responses: { '200': { description: ok }, '400': { description: out of range } }
+  /liveness/duress-pin:
+    post: { summary: Set the duress PIN, responses: { '200': { description: ok } } }
+
+  /circle:
+    put:
+      summary: Replace the circle (setup or re-share). Routing only — never names.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                group_threshold: { type: integer }
+                groups:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      member_threshold: { type: integer }
+                      members:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            email: { type: string }
+                            phone: { type: string }
+                            card_id: { type: string }
+      responses: { '200': { description: '{ok, reshare}' } }
+    get: { summary: Circle config + members + attestation status, responses: { '200': { description: circle } } }
+  /circle/health-check:
+    post: { summary: Send a health-check round now (fresh one-time links), responses: { '200': { description: '[{card_id, url, emailed}]' } } }
+
+  /ceremony:
+    get: { summary: Owner view of the open/last ceremony, responses: { '200': { description: '{ceremony: Ceremony|null}' } } }
+  /ceremony/veto:
+    post: { summary: Owner veto — cancels ceremony and resets liveness, responses: { '200': { description: ok } } }
+  /firedrill:
+    post:
+      summary: Record a fire-drill result to the audit trail
+      requestBody: { content: { application/json: { schema: { type: object, properties: { passed: { type: boolean }, tool_hash_verified: { type: boolean } } } } } }
+      responses: { '200': { description: ok } }
+
+  /link/{token}:
+    get:
+      summary: Shareholder link view (sessionless; rate limited per token + globally)
+      security: []
+      parameters: [{ name: token, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: '{owner_name, purpose, card_id, used, liveness_state, can_initiate, ceremony}' }
+        '404': { description: unknown/expired/revoked }
+  /link/{token}/attest:
+    post:
+      summary: Health-check attestation (single use; card_id must match)
+      security: []
+      requestBody: { content: { application/json: { schema: { type: object, properties: { card_id: { type: string } } } } } }
+      responses: { '200': { description: ok }, '400': { description: used / wrong card / wrong purpose } }
+  /link/{token}/ceremony/initiate:
+    post:
+      summary: Begin a recovery (QUORUM_ELIGIBLE, or with death-certificate claim). Notifies everyone; opens the veto window.
+      security: []
+      responses: { '200': { description: '{ok, ceremony_id, veto_ends_at}' }, '400': { description: not eligible }, '409': { description: already underway } }
+  /link/{token}/ceremony/confirm:
+    post: { summary: Confirm participation; releases automatically when veto has passed and quorum is met, security: [], responses: { '200': { description: '{ok, quorum}' } } }
+  /link/{token}/bundle:
+    get: { summary: Download the released bundle (confirmed participants of a RELEASED ceremony only), security: [], responses: { '200': { description: bytes }, '400': { description: not released to you } } }

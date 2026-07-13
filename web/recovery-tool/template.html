@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:">
+<title>AmberKey Recovery — works offline</title>
+<link rel="icon" href="data:image/png;base64,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">
+<style>
+  :root { --amber:#7d5f08; --amber-soft:#f5efdb; --btn:#14213d; --btn-hover:#20345c; --btn-fg:#fff; --ink:#1a2438; --muted:#5b6a84; --line:#dfe5ee; --ok:#2e6f4e; --bad:#b91c1c; --bg:#f6f8fa; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:18px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:2rem 1.25rem 6rem; }
+  h1 { font-size:1.6rem; margin:.2rem 0; }
+  h2 { font-size:1.25rem; margin:2.2rem 0 .6rem; }
+  .badge { display:inline-block; background:var(--amber-soft); color:var(--amber); border:1px solid var(--amber); border-radius:999px; padding:.1rem .7rem; font-size:.85rem; font-weight:600; }
+  .lead { color:var(--muted); }
+  .step { background:#fff; border:1px solid var(--line); border-radius:12px; padding:1.25rem 1.25rem 1rem; margin:1rem 0; }
+  .step h2 { margin-top:0; }
+  textarea { width:100%; min-height:5.5rem; font:16px/1.5 ui-monospace, monospace; padding:.6rem; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); }
+  button { font:inherit; font-weight:600; background:var(--btn); color:var(--btn-fg); border:0; border-radius:8px; padding:.55rem 1.1rem; cursor:pointer; }
+  button:hover:not(:disabled) { background:var(--btn-hover); }
+  button.secondary { background:#fff; color:var(--amber); border:1px solid var(--amber); }
+  button:disabled { opacity:.45; cursor:default; }
+  ul.cards { list-style:none; padding:0; margin:.8rem 0 0; }
+  ul.cards li { padding:.45rem .6rem; border-bottom:1px solid var(--line); font-size:.95rem; display:flex; justify-content:space-between; gap:.5rem; }
+  .ok { color:var(--ok); } .bad { color:var(--bad); }
+  .progress { margin-top:.9rem; padding:.8rem; background:var(--amber-soft); border-radius:8px; font-size:.95rem; }
+  .muted { color:var(--muted); font-size:.9rem; }
+  input[type=file] { font:inherit; }
+  #packet { display:none; }
+  nav#files { display:flex; flex-wrap:wrap; gap:.4rem; margin:.8rem 0; }
+  nav#files a { font-size:.85rem; border:1px solid var(--line); background:#fff; border-radius:999px; padding:.15rem .7rem; color:var(--ink); text-decoration:none; cursor:pointer; }
+  nav#files a.active { background:var(--amber); color:#fff; border-color:var(--amber); }
+  article#view { background:#fff; border:1px solid var(--line); border-radius:12px; padding:1.4rem; overflow-x:auto; }
+  article#view h1 { font-size:1.35rem; } article#view h2 { font-size:1.15rem; margin:1.4rem 0 .5rem; }
+  article#view pre { background:var(--bg); padding:.8rem; border-radius:8px; overflow-x:auto; font-size:.85rem; }
+  dl { margin:.4rem 0; } dt { font-weight:600; margin-top:.6rem; } dd { margin:0 0 0 .1rem; color:var(--muted); }
+  .secret-value { background:var(--ink); color:var(--ink); border-radius:4px; padding:0 .3rem; cursor:pointer; font-family:ui-monospace, monospace; }
+  .secret-value.revealed { color:#fff; }
+  .warn { border-left:4px solid var(--amber); background:var(--amber-soft); padding:.7rem .9rem; border-radius:0 8px 8px 0; margin:.8rem 0; }
+  footer { margin-top:3rem; color:var(--muted); font-size:.85rem; }
+  @media (prefers-color-scheme: dark) {
+    :root { --amber:#f0b429; --amber-soft:#2b2410; --btn:#f0b429; --btn-hover:#f6c95c; --btn-fg:#1b1710; --ink:#e8edf7; --muted:#9aa9c4; --line:#2b3c5e; --bg:#0d1526; --ok:#82c79b; }
+    .step, article#view, nav#files a, textarea, ul.cards li { background:#16233c; }
+    button.secondary { background:#16233c; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <span class="badge">Offline recovery tool · v__VERSION__</span>
+  <h1>AmberKey Recovery</h1>
+  <p class="lead">Someone you care about prepared this for you. This page reconstructs the
+  instructions and keys they left behind. It works entirely on this computer:
+  <strong>no internet connection is needed or used</strong>, and nothing you type leaves this page.
+  Take your time.</p>
+
+  <div class="step" id="step-shares">
+    <h2>Step 1 — Enter the cards</h2>
+    <p>Type the word phrase from each AmberKey card, one card per line. Copy the words exactly;
+    capitalization does not matter.</p>
+    <textarea id="share-input" placeholder="example: junk academic academic acid ..." autocomplete="off" spellcheck="false"></textarea>
+    <p><button id="add-shares">Add card(s)</button></p>
+    <ul class="cards" id="share-list"></ul>
+    <div class="progress" id="progress" hidden></div>
+  </div>
+
+  <div class="step" id="step-bundle">
+    <h2>Step 2 — Load the bundle file</h2>
+    <p>The bundle is a single file, usually named like <code>continuity-bundle.age</code>. It may be on a
+    USB drive that came with a card, or downloaded from AmberKey.</p>
+    <input type="file" id="bundle-input">
+  </div>
+
+  <div class="step">
+    <h2>Step 3 — Unlock</h2>
+    <p><button id="recover" disabled>Unlock the packet</button></p>
+    <p class="bad" id="recover-error" hidden></p>
+  </div>
+
+  <section id="packet">
+    <h2 id="packet-title">The packet</h2>
+    <div class="warn"><strong>Before anything else:</strong> do not cancel the phone number of the
+    person who died until every account is settled. Many accounts confirm changes by text message.</div>
+    <nav id="files"></nav>
+    <article id="view"></article>
+    <p style="margin-top:1rem"><button class="secondary" id="download-all">Download every file</button>
+    <span class="muted">Files save individually; keep them somewhere private.</span></p>
+  </section>
+
+  <footer>
+    <p>AmberKey recovery tool © Tarnover, LLC. Open source (Apache-2.0) — spec and mirrors at
+    <code>recover.amberkey.app</code> · <code>github.com/amberkey-app/amberkey</code> ·
+    <code>codeberg.org/amberkey/amberkey</code>. Verify this file against the hash printed on any card.</p>
+    <p>Formats: SLIP-39 secret sharing, age v1 encryption, tar. Any standard tools can perform
+    this recovery without AmberKey — see the recovery spec.</p>
+  </footer>
+</main>
+
+<script>
+__GLUE_JS__
+</script>
+<script>
+"use strict";
+const WASM_B64 = "__WASM_B64__";
+
+function b64ToBytes(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+wasm_bindgen.initSync({ module: b64ToBytes(WASM_B64) });
+
+const state = { shares: [], bundle: null, files: null };
+const $ = (id) => document.getElementById(id);
+
+function renderShares() {
+  const list = $("share-list");
+  list.textContent = "";
+  for (const s of state.shares) {
+    const li = document.createElement("li");
+    const label = document.createElement("span");
+    label.textContent = `Card G${s.meta.group_index + 1}-M${s.meta.member_index + 1} — group ${s.meta.group_index + 1} of ${s.meta.group_count}`;
+    const ok = document.createElement("span");
+    ok.className = "ok";
+    ok.textContent = "✓ valid";
+    li.append(label, ok);
+    list.append(li);
+  }
+  renderProgress();
+  updateRecoverButton();
+}
+
+function renderProgress() {
+  const box = $("progress");
+  if (state.shares.length === 0) { box.hidden = true; return; }
+  box.hidden = false;
+  const meta = state.shares[0].meta;
+  const perGroup = new Map();
+  for (const s of state.shares) {
+    const g = perGroup.get(s.meta.group_index) || { have: 0, need: s.meta.member_threshold };
+    g.have++;
+    perGroup.set(s.meta.group_index, g);
+  }
+  let complete = 0;
+  const parts = [];
+  for (const [gi, g] of [...perGroup.entries()].sort((a, b) => a[0] - b[0])) {
+    const done = g.have >= g.need;
+    if (done) complete++;
+    parts.push(`group ${gi + 1}: ${Math.min(g.have, g.need)} of ${g.need} cards${done ? " ✓" : ""}`);
+  }
+  const needGroups = meta.group_threshold;
+  const head = complete >= needGroups
+    ? "<strong>You have enough cards.</strong>"
+    : `<strong>${complete} of ${needGroups} groups complete.</strong> Cards from ${needGroups - complete} more group(s) are needed.`;
+  box.innerHTML = head + "<br>" + parts.join(" · ");
+}
+
+function updateRecoverButton() {
+  $("recover").disabled = !(state.shares.length > 0 && state.bundle);
+}
+
+$("add-shares").addEventListener("click", () => {
+  const lines = $("share-input").value.split("\n").map((l) => l.trim()).filter(Boolean);
+  const errors = [];
+  for (const line of lines) {
+    try {
+      const meta = JSON.parse(wasm_bindgen.inspect_share(line));
+      const dup = state.shares.some((s) => s.meta.group_index === meta.group_index && s.meta.member_index === meta.member_index);
+      if (!dup) state.shares.push({ mnemonic: line.toLowerCase(), meta });
+    } catch (e) {
+      errors.push(`"${line.split(" ").slice(0, 3).join(" ")}…": ${e.message || e}`);
+    }
+  }
+  $("share-input").value = errors.length ? "" : "";
+  renderShares();
+  if (errors.length) {
+    const li = document.createElement("li");
+    li.className = "bad";
+    li.textContent = "Not accepted — " + errors.join("; ") + ". Re-type the whole line from the card.";
+    $("share-list").append(li);
+  }
+});
+
+$("bundle-input").addEventListener("change", async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  state.bundle = new Uint8Array(await f.arrayBuffer());
+  updateRecoverButton();
+});
+
+$("recover").addEventListener("click", () => {
+  const err = $("recover-error");
+  err.hidden = true;
+  try {
+    const json = wasm_bindgen.recover_bundle(JSON.stringify(state.shares.map((s) => s.mnemonic)), state.bundle);
+    state.files = JSON.parse(json).map((f) => ({ path: f.path, data: b64ToBytes(f.data) }));
+    renderPacket();
+  } catch (e) {
+    err.textContent = "Could not unlock: " + (e.message || e) +
+      " — check the progress panel above; all cards must show the same case number.";
+    err.hidden = false;
+  }
+});
+
+const td = new TextDecoder();
+
+function fileOrder(p) {
+  if (p === "packet/executor-checklist.md") return 0;
+  if (p === "manifest.json") return 5;
+  if (p.startsWith("packet/")) return 1;
+  if (p === "circle.json") return 2;
+  if (p.startsWith("secrets/")) return 3;
+  return 4;
+}
+
+function renderPacket() {
+  const files = [...state.files].sort((a, b) => fileOrder(a.path) - fileOrder(b.path) || a.path.localeCompare(b.path));
+  const manifest = state.files.find((f) => f.path === "manifest.json");
+  if (manifest) {
+    try {
+      const m = JSON.parse(td.decode(manifest.data));
+      $("packet-title").textContent = `The packet ${m.owner_name ? "from " + m.owner_name : ""} (saved ${m.created_at.slice(0, 10)})`;
+    } catch { /* keep default title */ }
+  }
+  const nav = $("files");
+  nav.textContent = "";
+  files.forEach((f, i) => {
+    const a = document.createElement("a");
+    a.textContent = f.path;
+    a.addEventListener("click", () => showFile(f, a));
+    nav.append(a);
+    if (i === 0) showFile(f, a);
+  });
+  $("packet").style.display = "block";
+  $("packet").scrollIntoView({ behavior: "smooth" });
+}
+
+function showFile(f, link) {
+  for (const a of $("files").children) a.classList.remove("active");
+  if (link) link.classList.add("active");
+  const view = $("view");
+  view.textContent = "";
+  if (f.path.endsWith(".md")) {
+    view.innerHTML = miniMarkdown(td.decode(f.data));
+  } else if (f.path.endsWith(".json")) {
+    try { renderJson(view, JSON.parse(td.decode(f.data)), f.path.startsWith("secrets/")); }
+    catch { view.append(pre(td.decode(f.data))); }
+  } else {
+    view.append(pre(safeText(f.data)));
+  }
+}
+
+function safeText(data) {
+  try { return td.decode(data); } catch { return `(binary file, ${data.length} bytes — use Download)`; }
+}
+
+function pre(text) {
+  const el = document.createElement("pre");
+  el.textContent = text;
+  return el;
+}
+
+function esc(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// Tiny markdown renderer: headings, bold, italic, code, lists, paragraphs. Enough
+// for packet documents; anything unusual degrades to readable text.
+function miniMarkdown(src) {
+  const inline = (s) => esc(s)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>");
+  const lines = src.replace(/^---[\s\S]*?---\n/, "").split("\n");
+  let html = "", inList = false, inCode = false;
+  for (const line of lines) {
+    if (line.startsWith("```")) { html += inCode ? "</pre>" : "<pre>"; inCode = !inCode; continue; }
+    if (inCode) { html += esc(line) + "\n"; continue; }
+    const h = line.match(/^(#{1,4})\s+(.*)/);
+    const li = line.match(/^\s*(?:[-*]|\d+\.)\s+(.*)/);
+    if (li && !inList) { html += "<ul>"; inList = true; }
+    if (!li && inList) { html += "</ul>"; inList = false; }
+    if (h) html += `<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`;
+    else if (li) html += `<li>${inline(li[1])}</li>`;
+    else if (line.trim()) html += `<p>${inline(line)}</p>`;
+  }
+  if (inList) html += "</ul>";
+  if (inCode) html += "</pre>";
+  return html;
+}
+
+function renderJson(view, obj, isSecret) {
+  const dl = document.createElement("dl");
+  const add = (k, v) => {
+    const dt = document.createElement("dt");
+    dt.textContent = k;
+    const dd = document.createElement("dd");
+    if (isSecret && (k === "value")) {
+      const span = document.createElement("span");
+      span.className = "secret-value";
+      span.textContent = String(v);
+      span.title = "click to reveal";
+      span.addEventListener("click", () => span.classList.toggle("revealed"));
+      dd.append(span);
+    } else if (typeof v === "object" && v !== null) {
+      dd.append(pre(JSON.stringify(v, null, 2)));
+    } else {
+      dd.textContent = String(v);
+    }
+    dl.append(dt, dd);
+  };
+  for (const [k, v] of Object.entries(obj)) add(k, v);
+  view.append(dl);
+}
+
+$("download-all").addEventListener("click", () => {
+  for (const f of state.files) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([f.data]));
+    a.download = f.path.replace(/\//g, "__");
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  }
+});
+</script>
+</body>
+</html>
