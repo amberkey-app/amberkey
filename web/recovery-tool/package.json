@@ -1,0 +1,14 @@
+{
+  "name": "amberkey-recovery-tool",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.0"
+  },
+  "license": "Apache-2.0"
+}
